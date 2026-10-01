@@ -1,0 +1,31 @@
+# Persistent browser profile data
+.profiles/
+
+# Generated scraping data & DB snapshots
+data/
+data/reports/
+data/*.db
+
+# Logs
+logs/
+*.log
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest / testing cache
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# IDE & System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
