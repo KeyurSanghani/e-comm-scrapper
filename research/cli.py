@@ -42,7 +42,7 @@ def run(
     exclude_sponsored: bool = typer.Option(False, help="Exclude sponsored / ad listings"),
     headless: bool = typer.Option(False, help="Run browser in headless mode"),
     no_dashboard: bool = typer.Option(False, help="Disable live visual dashboard"),
-    xlsx: bool = typer.Option(False, help="Generate Excel (.xlsx) report in addition to CSV/JSON"),
+    xlsx: bool = typer.Option(True, help="Generate Excel (.xlsx) report with platform-wise tabs"),
 ):
     """Run research pipeline for query across Amazon, Flipkart, and Meesho."""
     cfg = load_config()

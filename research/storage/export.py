@@ -88,10 +88,10 @@ def export_reports(
     filtered_products: List[Product],
     cfg: Optional[Config] = None,
     run_id: Optional[int] = None,
-    generate_xlsx: bool = False,
+    generate_xlsx: bool = True,
     db_file: str = "data/research.db",
 ) -> Path:
-    """Export reports (CSV, JSON, XLSX) and save database snapshots."""
+    """Export reports (CSV, JSON, XLSX with platform-wise tabs) and save database snapshots."""
     if cfg is None:
         cfg = Config()
 
@@ -111,15 +111,40 @@ def export_reports(
     df_all = products_to_dataframe(all_products)
     df_filtered = products_to_dataframe(filtered_products)
 
+    # Split platform-wise DataFrames
+    df_amazon = df_filtered[df_filtered["platform"] == "amazon"].copy()
+    df_flipkart = df_filtered[df_filtered["platform"] == "flipkart"].copy()
+    df_meesho = df_filtered[df_filtered["platform"] == "meesho"].copy()
+
+    # Re-rank per platform
+    if not df_amazon.empty:
+        df_amazon["rank"] = range(1, len(df_amazon) + 1)
+    if not df_flipkart.empty:
+        df_flipkart["rank"] = range(1, len(df_flipkart) + 1)
+    if not df_meesho.empty:
+        df_meesho["rank"] = range(1, len(df_meesho) + 1)
+
     # 3. Export CSV files (utf-8-sig for Excel INR ₹ display)
     df_filtered.to_csv(out_dir / "report.csv", index=False, encoding="utf-8-sig")
+    df_amazon.to_csv(out_dir / "report_amazon.csv", index=False, encoding="utf-8-sig")
+    df_flipkart.to_csv(out_dir / "report_flipkart.csv", index=False, encoding="utf-8-sig")
+    df_meesho.to_csv(out_dir / "report_meesho.csv", index=False, encoding="utf-8-sig")
     df_all.to_csv(out_dir / "report_all.csv", index=False, encoding="utf-8-sig")
 
     # 4. Export JSON
     with open(out_dir / "report.json", "w", encoding="utf-8") as f:
         json.dump(df_filtered.to_dict(orient="records"), f, indent=2, ensure_ascii=False)
 
-    # 5. Export Run Meta
+    # 5. Export Multi-Tab Excel Workbook (report.xlsx)
+    xlsx_path = out_dir / "report.xlsx"
+    with pd.ExcelWriter(xlsx_path, engine="openpyxl") as writer:
+        df_filtered.to_excel(writer, index=False, sheet_name="All_Ranked")
+        df_amazon.to_excel(writer, index=False, sheet_name="Amazon")
+        df_flipkart.to_excel(writer, index=False, sheet_name="Flipkart")
+        df_meesho.to_excel(writer, index=False, sheet_name="Meesho")
+        df_all.to_excel(writer, index=False, sheet_name="All_Scraped_Raw")
+
+    # 6. Export Run Meta
     platform_counts = df_all["platform"].value_counts().to_dict()
     method_counts = df_filtered["sales_method"].value_counts().to_dict()
 
@@ -132,19 +157,15 @@ def export_reports(
         "platform_counts": platform_counts,
         "method_counts": method_counts,
         "reports": {
-            "csv": str(out_dir / "report.csv"),
-            "csv_all": str(out_dir / "report_all.csv"),
+            "xlsx": str(xlsx_path),
+            "csv_all_ranked": str(out_dir / "report.csv"),
+            "csv_amazon": str(out_dir / "report_amazon.csv"),
+            "csv_flipkart": str(out_dir / "report_flipkart.csv"),
+            "csv_meesho": str(out_dir / "report_meesho.csv"),
+            "csv_all_raw": str(out_dir / "report_all.csv"),
             "json": str(out_dir / "report.json"),
         },
     }
-
-    # 6. Optional XLSX export
-    if generate_xlsx:
-        xlsx_path = out_dir / "report.xlsx"
-        with pd.ExcelWriter(xlsx_path, engine="openpyxl") as writer:
-            df_filtered.to_excel(writer, index=False, sheet_name="Ranked_Report")
-            df_all.to_excel(writer, index=False, sheet_name="All_Scraped")
-        meta["reports"]["xlsx"] = str(xlsx_path)
 
     with open(out_dir / "run_meta.json", "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2, ensure_ascii=False)

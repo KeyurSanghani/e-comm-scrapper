@@ -63,10 +63,16 @@ python -m research selftest
 ## 4. Reports & CSV Output
 
 Reports are generated in `data/reports/<query_slug>_<timestamp>/`:
-- `report.csv` — Ranked, deduplicated, and filtered report (encoded in UTF-8 with BOM for Excel ₹ compatibility).
+- `report.xlsx` — **Multi-tab Excel workbook** with 5 worksheets:
+  - **`All_Ranked`** (Consolidated ranked report)
+  - **`Amazon`** (Amazon products platform-wise)
+  - **`Flipkart`** (Flipkart products platform-wise)
+  - **`Meesho`** (Meesho products platform-wise)
+  - **`All_Scraped_Raw`** (Unfiltered full raw dataset)
+- `report.csv` — Consolidated ranked report (UTF-8 with BOM for Excel ₹ compatibility).
+- `report_amazon.csv`, `report_flipkart.csv`, `report_meesho.csv` — Platform-wise individual CSV reports.
 - `report_all.csv` — Complete unfiltered raw scraped dataset.
 - `report.json` — Structured JSON array.
-- `report.xlsx` — Multi-sheet Excel workbook (optional with `--xlsx`).
 - `run_meta.json` — Run statistics, counts per platform and sales method.
 
 ### Report Columns
