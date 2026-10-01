@@ -1,0 +1,42 @@
+browser:
+  headless: false
+  channel: chrome
+  slow_mo_ms: 0
+  viewport: {width: 1366, height: 850}
+  locale: en-IN
+  timezone: Asia/Kolkata
+
+scraping:
+  pages_per_platform: 5
+  max_products_per_platform: 150
+  delay_seconds: {min: 2.5, max: 6.0}
+  page_timeout_seconds: 45
+  max_retries: 3
+  max_parallel_tabs_per_platform: 1
+  pincode: null
+
+enrichment:
+  enabled: true
+  top_k_per_platform: 30
+  amazon_fetch_bsr: true
+  review_window_days: 30
+  max_review_pages: 3
+
+estimation:
+  rating_rate:
+    flipkart: 0.02
+    meesho: 0.02
+  min_days_between_snapshots: 3
+
+presets:
+  opportunity:
+    price_min: 1000
+    price_max: 1500
+    min_units: 50
+    max_bsr: 20000
+    min_rating: 4.0
+    max_ratings_count: 100
+
+output:
+  dir: data/reports
+  formats: [csv, json]

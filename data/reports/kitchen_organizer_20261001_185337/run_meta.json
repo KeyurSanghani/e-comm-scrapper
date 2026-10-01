@@ -1,0 +1,21 @@
+{
+  "run_id": 1,
+  "query": "kitchen organizer",
+  "exported_at": "2026-10-01T13:23:37.513142+00:00",
+  "total_scraped": 446,
+  "filtered_total": 446,
+  "platform_counts": {
+    "amazon": 192,
+    "flipkart": 135,
+    "meesho": 119
+  },
+  "method_counts": {
+    "relative_only": 332,
+    "native_badge": 114
+  },
+  "reports": {
+    "csv": "data\\reports\\kitchen_organizer_20261001_185337\\report.csv",
+    "csv_all": "data\\reports\\kitchen_organizer_20261001_185337\\report_all.csv",
+    "json": "data\\reports\\kitchen_organizer_20261001_185337\\report.json"
+  }
+}
